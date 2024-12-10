@@ -1,0 +1,39 @@
+import ISIL.io;
+import ISIL.lang;
+
+Programme L3_ISILA_CAD
+
+PDEC
+
+integer X | Yas_2 ;
+integer Tab[40];
+final float Pil=4;
+float Y|Z|A;
+integer T[20];
+float Man[1];
+
+InDebut
+
+#tittrrfzle
+ Y<--A/Z-4 ;
+ Tab[2]<--9/A;
+// ceci est un comm3
+ Z<--X-0;
+ A<--Y+1;
+ /* hfhzgnegu */
+FOR (i<--1;i<6;i++) // ceci est un comm4
+ DO B<--20*A;
+    Y<--Z+A;
+	T[4]<--A-Y;
+ENDFOR
+
+Input("%d",X);
+Write("le numéro est %f ",Y);
+
+If(40<100) DO
+Write("valide");
+Else
+Write("Invalide");
+EndIf
+
+InFin
