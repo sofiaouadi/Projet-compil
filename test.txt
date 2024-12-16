@@ -1,4 +1,4 @@
-import ISIL.io;
+/*import ISIL.io;*/
 import ISIL.lang;
 
 Programme L3_ISILA_CAD
