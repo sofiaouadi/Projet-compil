@@ -4,6 +4,7 @@
 extern YYSTYPE yylval;
 extern int nb_ligne;
 extern int col;
+extern int TailleTab;
 %}
 lettre [a-zA-Z]
 chiffre [0-9]
@@ -99,3 +100,4 @@ EndIf {printf("ligne %d: %s reconnue \n",nb_ligne,yytext); col=col+yyleng; retur
 \n {col=1;nb_ligne++;} //reinitialiser la colonne et incrementer la ligne
 . {printf ("ATTENTION : erreur lexical sur l'entite %s a la ligne %d a la colonne %d\n",yytext,nb_ligne,col); return err;}
 %%
+
