@@ -5,7 +5,9 @@
  int col=1;
  int i=1;
  int j=1;
+ int TailleTab = -1;
  int compt;
+ int typee;
  void yyerror(char *msg);
  
 int bibliotheque_incluse[2]={0,0};
@@ -113,22 +115,47 @@ type: mc_integer {strcpy(sauvType,$1);}
 
 /* ---Affectation --- */
 
-AFFECTATION:  idf aff expression pvg {if (recherche($1)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$1,nb_ligne,col);}
-            | idf C1 cst_int C2 aff expression pvg {if (recherche($1)== -1) printf ("Erreur semantique TABLEAU ""%s"" NON DECLARE a la ligne %d, colonne %d \n",$1,nb_ligne,col);}
+AFFECTATION:  idf aff expression pvg { verifierSiConstante($1); 
+                                       if ( !(recherche($1)== -1) && (comparerChaines(returnType($1), "int") == 1 ) && (typee == 0))  printf("Erreur semantique : l'instruction aritmethique n'a pas le meme type a la ligne %d, colonne %d\n",nb_ligne, col);
+                                       if ( !(recherche($1)== -1) && (comparerChaines(returnType($1), "float") == 1 ) && (typee == 1))  printf("Erreur semantique : l'instruction aritmethique n'a pas le meme type a la ligne %d , colonne %d\n",nb_ligne,col);
+	                                   if (recherche($1)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d , colonne %d\n",$1,nb_ligne,col);}
+            | idf C1 cst_int C2 aff expression pvg {if(comparer2(TailleTab,$3)== -1) printf("Erreur semantique : depassement de la taille du tableau a la ligne %d , colonne %d \n", nb_ligne,col);
+			                                        if (recherche($1)== -1) printf ("Erreur semantique TABLEAU ""%s"" NON DECLARE a la ligne %d, colonne %d\n",$1,nb_ligne,col);}
 			;
+
 
 				
 aff: inf moins moins ; /* "<--" */
 
-expression: CST 
-           | idf { if (recherche($1)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$1,nb_ligne,col);}
-		   | idf C1 cst_int C2
-		   | expression op_arith idf { if (recherche($3)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$3,nb_ligne,col);}			 
-		   | expression division idf{ if (recherche($3)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$3,nb_ligne,col);}			   
-		   | expression op_arith CST 			  
+expression: cst_int {typee=1;} 
+           | cst_reel {typee=0;}
+		   
+           | idf { if (recherche($1)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d ,colonne %d\n",$1,nb_ligne,col);
+		               else if ((comparerChaines(returnType($1), "int") == 1 )) {typee=1;}
+                                       else if ((comparerChaines(returnType($1), "float") == 1 )) {typee=0;}}
+		   
+		   
+		   | idf C1 cst_int C2 {if(comparer2(TailleTab,$3)== -1) printf("Erreur semantique : depassement de la taille du tableau a la ligne %d, colonne %d\n", nb_ligne,col);
+		                        if (recherche($1)== -1) printf ("Erreur semantique TABLEAU ""%s"" NON DECLARE a la ligne %d , colonne %d \n",$1,nb_ligne,col);
+		                          else if ((comparerChaines(returnType($1), "int") == 1 )) typee=1;
+                                       else if ((comparerChaines(returnType($1), "float") == 1 )) typee=0;}
+									   
+		   | expression op_arith idf { if (recherche($3)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$3,nb_ligne,col);
+		                               else 
+									   {if ((comparerChaines(returnType($3), "int") == 1) && (typee == 0) ) 
+										   typee = 0;
+									         else if ((comparerChaines(returnType($3), "float") == 1 ) && (typee == 1))  
+									                typee = 0;}}
+												
+           | expression fois idf { if (recherche($3)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$3,nb_ligne,col);}							   
+		   | expression division idf{ if (recherche($3)== -1) printf ("Erreur semantique IDF %s NON DECLARE a la ligne %d, colonne %d\n",$3,nb_ligne,col);
+		                                else if ((comparerChaines(returnType($3), "int") == 1 ) && (typee == 0) ) typee=0;}		   
+		   | expression op_arith cst_int {typee=1;}
+		   | expression op_arith cst_reel {typee=0;}						   
+		   | expression fois CST 
 		   | expression division  cst_reel 			  
 		   | expression division  cst_int  {if ($3==0) 
-               printf ("Erreur semantique DIVISION PAR 0 a la ligne %d, colonne %d\n",nb_ligne,col); }
+               printf ("Erreur semantique DIVISION PAR 0 a la ligne %d, colonne %d\n",nb_ligne, col); }
 		   
 CST: cst_int  
    | cst_reel
